@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 init -1 style default:
     font gui.default_font
     size gui.text_size
@@ -147,7 +158,7 @@ init -1 style frame:
 
 
 
-init -501 screen say(who, what):  # TO!DONE: screen_say!
+init -501 screen say(who, what):
     style_prefix "say"
 
     window:
@@ -163,8 +174,8 @@ init -501 screen say(who, what):  # TO!DONE: screen_say!
 
 
 
-    #if not renpy.variant("small"):
-    #    add SideImage() xalign 0.0 yalign 1.0
+    if not renpy.variant("small"):
+        add SideImage() xalign 0.0 yalign 1.0
 
     use quick_menu
 
@@ -178,7 +189,7 @@ init -1 style namebox is default
 init -1 style namebox_label is say_label
 
 
-init -1 style window:  # TO!DONE: или же здесь?
+init -1 style window:
     xalign 0.5
     xfill True
     yalign gui.textbox_yalign
@@ -207,7 +218,7 @@ init -1 style say_label:
     yalign 0.5
     outlines [(3, "#b59", 0, 0), (1, "#b59", 1, 1)]
 
-init -1 style say_dialogue:  # TO!DONE: фикс положения должен быть здесь?
+init -1 style say_dialogue:
     xpos gui.text_xpos
     xanchor gui.text_xalign
     xsize gui.text_width
@@ -376,15 +387,13 @@ init -501 screen quick_menu():
 
 
             textbutton _("History") action ShowMenu('history')
-            textbutton _("Skip") action Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("Skip") action Skip()
             textbutton _("Auto") action Preference("auto-forward", "toggle")
             textbutton _("Save") action ShowMenu('save')
             textbutton _("Load") action ShowMenu('load')
 
 
             textbutton _("Settings") action ShowMenu('preferences')
-            if config.developer:
-                textbutton "Devtools" action ShowMenu('_developer')
 
 
 
@@ -419,6 +428,7 @@ init -1 python:
     def FinishEnterName():
         if not player: return
         persistent.playername = player
+        renpy.save_persistent()
         renpy.hide_screen("name_input")
         renpy.jump_out_of_context("start")
 
@@ -461,9 +471,6 @@ init -501 screen navigation():
 
             textbutton _("Settings") action [ShowMenu("preferences"), SensitiveIf(renpy.get_screen("preferences") == None)]
 
-            #Added by AlexAzumi
-            if persistent.playthrough > 0:
-                textbutton _("Characters") action [ShowMenu("characters"), SensitiveIf(renpy.get_screen("characters") == None)]
 
 
             if renpy.variant("pc"):
@@ -472,7 +479,7 @@ init -501 screen navigation():
                 textbutton _("Help") action [Help("README.html"), Show(screen="dialog", message="The help file has been opened in your browser.", ok_action=Hide("dialog"))]
 
 
-            textbutton _("Quit") action Quit(confirm=not main_menu)  # TO!DONE: now u can exit even on Android!
+            textbutton _("Quit") action Quit(confirm=not main_menu)
         else:
             timer 1.75 action Start("autoload_yurikill")
 
@@ -909,48 +916,12 @@ init -1 style slot_button_text:
     color "#666"
     outlines []
 
-#Added by AlexAzumi
-init -501 screen characters() tag menu:
-    use game_menu(_("Files"), scroll ="viewport"):
-        vbox:
-            style_prefix "navigation"
-            xoffset 50
-            frame:
-                xpadding 10
-                ypadding 10
-                xalign 1
-                yalign 1
-                vbox:
-                    label "Characters":
-                        xalign 0.5
-                        text_size 50
-                    null height 10
 
-                    python:
-                        monika_flag = check_if_exist("monika")
-                        natsuki_flag = check_if_exist("natsuki")
-                        sayori_flag = check_if_exist("sayori")
-                        yuri_flag = check_if_exist("yuri")
 
-                    #Buttons cannot be pressed if the character does not exist
-                    textbutton "Restore all characters":
-                        action [Function(restore_all_characters), Show(screen="dialog", message="All characters have been restored", ok_action=Hide("dialog"))]
-                    null height 5
 
-                    textbutton "Delete Monika":
-                        action [Function(delete_character, "monika"), Show(screen="dialog", message="Monika has been deleted", ok_action=Hide("dialog")), SensitiveIf(monika_flag)]
-                    null height 5
 
-                    textbutton "Delete Natsuki":
-                        action [Function(delete_character, "natsuki"), Show(screen="dialog", message="Natsuki has been deleted", ok_action=Hide("dialog")), SensitiveIf(natsuki_flag)]
-                    null height 5
 
-                    textbutton "Delete Sayori":
-                        action [Function(delete_character, "sayori"), Show(screen="dialog", message="Sayori has been deleted", ok_action=Hide("dialog")), SensitiveIf(sayori_flag)]
-                    null height 5
 
-                    textbutton "Delete Yuri":
-                        action [Function(delete_character, "yuri"), Show(screen="dialog", message="Yuri has been deleted", ok_action=Hide("dialog")), SensitiveIf(yuri_flag)]
 
 
 init -501 screen preferences() tag menu:
@@ -1473,13 +1444,9 @@ init -501 screen confirm(message, yes_action, no_action):
             yalign .5
             spacing 30
 
-        if in_sayori_kill and message == layout.QUIT:
-            add "confirm_glitch" xalign 0.5
-
-        else:
-            label _(message):
-                style "confirm_prompt"
-                xalign 0.5
+        label _(message):
+            style "confirm_prompt"
+            xalign 0.5
 
         hbox:
             xalign 0.5
