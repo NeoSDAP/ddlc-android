@@ -167,6 +167,7 @@ label natsuki_exclusive2_1:
     "Typical slice-of-life affair."
     "I kind of grew out of these, since it's rare for the writing to be entertaining enough to make up for the lack of plot."
     $ persistent.clear[0] = True
+    $ renpy.save_persistent()
     scene n_cg1_bg
     show n_cg1_base
     with dissolve_cg

@@ -23,10 +23,11 @@ label ch40_main:
 
     python:
         if not persistent.monika_back:
-            if persistent.monika is None or persistent.monika == "restored":  # TO!DONE: character fix!
+            try:
+                renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/monika.chr")
                 renpy.call_screen("dialog", message="Please stop playing with my heart.\nI don't want to come back.", ok_action=Return())
                 persistent.monika_back = True
-            else:
+            except:
                 pass
 
     $ delete_character("monika")
@@ -310,7 +311,7 @@ label ch40_main:
     s 1l "I think it could be fun..."
     s 1c "And we'll all get to know each other a little bit better, too!"
     s 1l "I mean..."
-    s "that's the kind of thing literature clubs do...right?"
+    s "That's the kind of thing literature clubs do...right?"
     show sayori at t31
     show yuri at f33
     y 1v "..."
@@ -405,6 +406,8 @@ label ch40_main:
     hide natsuki
     hide yuri
     "Natsuki and Yuri start to clean up the food."
+    $ config.skipping = False
+    $ config.allow_skipping = False
     show sayori 1q at t11
     s "Ehehe~"
     s 1x "I guess the meeting's over, huh?"
@@ -464,7 +467,7 @@ label ch40_main:
         s "It's just us now.{nw}"
         show screen tear(20, 0.1, 0.1, 0, 40)
         play sound "sfx/s_kill_glitch1.ogg"
-        pause 0.25
+        $ pause(0.25)
         stop sound
         hide screen tear
         show room_glitch zorder 1:
@@ -491,7 +494,7 @@ label ch40_main:
             linear 0.1 alpha 0.8
             0.1
             alpha 1.0
-        pause 0.3
+        $ pause(0.3)
         stop sound
         s 1q "Forever and ever..."
         hide sayori
@@ -501,7 +504,7 @@ label ch40_main:
         s "r"
         show screen tear(20, 0.1, 0.1, 0, 40)
         play sound "sfx/s_kill_glitch1.ogg"
-        pause 0.25
+        $ pause(0.25)
         stop sound
         hide screen tear
         s "e"
@@ -522,7 +525,7 @@ label ch40_main:
         window hide(None)
         play sound "sfx/s_kill_glitch1.ogg"
         hide sayori onlayer screens
-        pause 0.35
+        $ pause(0.35)
         stop sound
         hide screen tear
         window show(None)
@@ -537,11 +540,11 @@ label ch40_main:
         show screen tear(20, 0.1, 0.1, 0, 40)
         window hide(None)
         play sound "sfx/s_kill_glitch1.ogg"
-        pause 0.35
+        $ pause(0.35)
         stop sound
         hide screen tear
         scene black
-        pause 3.0
+        $ pause(3.0)
         return
 
     label ch40_clearall:

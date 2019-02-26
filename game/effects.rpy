@@ -135,7 +135,7 @@ init python:
                     self.timers[i] = st + random.random() * 0.4 + 0.1
             return 0
     class ParticleBurst(object):
-        def __init__(self, theDisplayable, explodeTime=0, numParticles=20, particleTime = 0.500, particleXSpeed = 3, particleYSpeed = 3):
+        def __init__(self, theDisplayable, explodeTime=0, numParticles=20, particleTime = 0.500, particleXSpeed = 3, particleYSpeed = 5):
             self.sm = SpriteManager(update=self.update)
             
             self.stars = [ ]
@@ -145,7 +145,7 @@ init python:
             self.particleTime = particleTime
             self.particleXSpeed = particleXSpeed
             self.particleYSpeed = particleYSpeed
-            self.gravity = 3
+            self.gravity = 240
             self.timePassed = 0
             
             for i in range(self.numParticles):
@@ -153,10 +153,12 @@ init python:
         
         def add(self, d, speed):
             s = self.sm.create(d)
-            ySpeed = (random.random() - 0.5) * self.particleYSpeed
-            xSpeed = (random.random() - 0.5) * self.particleXSpeed
-            s.x += xSpeed * 40
-            s.y += ySpeed * 40
+            speed = random.random()
+            angle = random.random() * 3.14159 * 2
+            xSpeed = speed * math.cos(angle) * self.particleXSpeed
+            ySpeed = speed * math.sin(angle) * self.particleYSpeed - 1
+            s.x = xSpeed * 24
+            s.y = ySpeed * 24
             pTime = self.particleTime
             self.stars.append((s, ySpeed, xSpeed, pTime))
         
@@ -164,8 +166,8 @@ init python:
             sindex=0
             for s, ySpeed, xSpeed, particleTime in self.stars:
                 if (st < particleTime):
-                    s.x += xSpeed
-                    s.y += (ySpeed + (self.gravity * st))
+                    s.x = xSpeed * 120 * (st + .20)
+                    s.y = (ySpeed * 120 * (st + .20) + (self.gravity * st * st))
                 else:
                     s.destroy()
                     self.stars.pop(sindex)

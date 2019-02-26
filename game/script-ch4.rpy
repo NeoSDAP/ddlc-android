@@ -457,6 +457,7 @@ label ch4_exclusive_natsuki:
     "I grab her wrist with my hand before it reaches my face."
     "Natsuki tries to use her other hand to fight back, but I grab that one as well."
     $ persistent.clear[4] = True
+    $ renpy.save_persistent()
     scene n_cg3_base
     show n_cg3_exp1
     show n_cg3_cake
@@ -1048,6 +1049,7 @@ label ch4_exclusive_yuri:
     "I rush out and fetch a small towel, then I dampen it with hot water."
     "I return to my room and kneel back down in front of her."
     $ persistent.clear[5] = True
+    $ renpy.save_persistent()
     scene y_cg3_base with dissolve_cg
     mc "Here..."
     "I pat down Yuri's face and neck with the towel."
@@ -1091,7 +1093,7 @@ label ch4_exclusive_yuri:
 
     scene bedroom with wipeleft_scene
     mc "That should do it..."
-    "I finish filling the night sky with white dots that looks like stars."
+    "I finish filling the night sky with white dots that look like stars."
     "Looking at the banner as a whole, it's very pretty and natural-looking."
     show yuri 1ba zorder 2 at t11
     y "I think it came out better than I expected."
@@ -1312,6 +1314,7 @@ label ch4_end_yes:
     mc "Then I know we'll both be happy."
     s "[player]..."
     $ persistent.clear[8] = True
+    $ renpy.save_persistent()
     scene s_cg3 with dissolve_cg
     "Suddenly, Sayori wraps her arms tightly around me."
     s "[player]..."

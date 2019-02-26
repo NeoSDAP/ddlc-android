@@ -140,6 +140,7 @@ label yuri_exclusive_1:
     mc "Ah, I guess that makes it kind of difficult to turn the page..."
     y "Here..."
     $ persistent.clear[2] = True
+    $ renpy.save_persistent()
     scene y_cg1_base with dissolve_cg
     "Yuri takes her left arm and holds the left side of the book between her thumb and forefinger."
     mc "Ah..."
@@ -474,6 +475,7 @@ label yuri_exclusive_2_ch3:
     mc "Are you sure...?"
     y "Of course."
     $ persistent.clear[3] = True
+    $ renpy.save_persistent()
     scene y_cg2_bg
     show y_cg2_base
     show y_cg2_details

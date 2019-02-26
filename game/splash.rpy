@@ -120,7 +120,7 @@ image menu_particles:
     2.481
     xpos 224
     ypos 104
-    ParticleBurst("gui/menu_particle.png", explodeTime=0, numParticles=20, particleTime=2.0, particleXSpeed=6, particleYSpeed=4).sm
+    ParticleBurst("gui/menu_particle.png", explodeTime=0, numParticles=40, particleTime=2.0, particleXSpeed=3, particleYSpeed=3).sm
     particle_fadeout
 
 transform particle_fadeout:
@@ -218,14 +218,14 @@ label splashscreen:
 
 
     python:
-        firstrun = "1"  # TO!DONE: 'firstrun' should always contain "1"
+        firstrun = "1"
 #        try:
 #            firstrun = renpy.file("firstrun").read(1)
 #        except:
 #            with open(config.basedir + "/game/firstrun", "wb") as f:
 #                pass
     if not firstrun:
-        if persistent.first_run:
+        if persistent.first_run and (config.version == persistent.oldversion or persistent.autoload == "postcredits_loop"):
             $ quick_menu = False
             scene black
             menu:
@@ -238,7 +238,7 @@ label splashscreen:
                         renpy.persistent.should_save_persistent = False
                         renpy.utter_restart()
                 "No, continue where I left off.":
-                    pass
+                    $ restore_relevant_characters()
 
         python:
             if not firstrun:
@@ -246,8 +246,12 @@ label splashscreen:
                     with open(config.basedir + "/game/firstrun", "w") as f:
                         f.write("1")
                 except:
-                    #renpy.jump("readonly")
-                    pass  # TO!DONE
+                    renpy.jump("readonly")
+
+    if config.version != persistent.oldversion:
+        $ restore_relevant_characters()
+        $ persistent.oldversion = config.version
+        $ renpy.save_persistent()
 
     if not persistent.first_run:
         python:
@@ -274,20 +278,20 @@ label splashscreen:
     python:
         s_kill_early = None
         if persistent.playthrough == 0:
-            if persistent.sayori is not None and persistent.sayori == "deleted":  # TO!DONE: character fix!
-                s_kill_early = True
+            try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/sayori.chr")
+            except: s_kill_early = True
         if not s_kill_early:
             if persistent.playthrough <= 2 and persistent.playthrough != 0:
-                if persistent.monika is not None and persistent.monika == "deleted":
-                    persistent.monika = "restored"
+                try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/monika.chr")
+                except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/monika.chr", "wb").write(renpy.file("monika.chr").read())
             if persistent.playthrough <= 1 or persistent.playthrough == 4:
-                if persistent.natsuki is not None and persistent.natsuki == "deleted":
-                    persistent.natsuki = "restored"
-                if persistent.yuri is not None and persistent.yuri == "deleted":
-                    persistent.yuri = "restored"
+                try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/natsuki.chr")
+                except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/natsuki.chr", "wb").write(renpy.file("natsuki.chr").read())
+                try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/yuri.chr")
+                except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/yuri.chr", "wb").write(renpy.file("yuri.chr").read())
             if persistent.playthrough == 4:
-                if persistent.sayori is not None and persistent.sayori == "deleted":
-                    persistent.sayori = "restored"
+                try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/sayori.chr")
+                except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/sayori.chr", "wb").write(renpy.file("sayori.chr").read())
 
     if not persistent.special_poems:
         python hide:
@@ -315,9 +319,9 @@ label splashscreen:
         $ persistent.seen_ghost_menu = True
         $ persistent.ghost_menu = True
         $ renpy.music.play(config.main_menu_music)
-        pause 1.0
+        $ pause(1.0)
         show end with dissolve_cg
-        pause 3.0
+        $ pause(3.0)
         $ config.allow_skipping = True
         return
 
@@ -325,9 +329,9 @@ label splashscreen:
     if s_kill_early:
         show black
         play music "bgm/s_kill_early.ogg"
-        pause 1.0
+        $ pause(1.0)
         show end with dissolve_cg
-        pause 3.0
+        $ pause(3.0)
         scene white
         show expression "images/cg/s_kill_early.png":
             yalign -0.05
@@ -380,21 +384,18 @@ label splashscreen:
     $ splash_message = splash_message_default
     $ config.main_menu_music = audio.t1
     $ renpy.music.play(config.main_menu_music)
+    $ starttime = datetime.datetime.now()
     show intro with Dissolve(0.5, alpha=True)
-    pause 2.5
-    hide intro with Dissolve(0.5, alpha=True)
+    $ pause(3.0 - (datetime.datetime.now() - starttime).total_seconds())
+    hide intro with Dissolve(max(0, 3.5 - (datetime.datetime.now() - starttime).total_seconds()), alpha=True)
     if persistent.playthrough == 2 and renpy.random.randint(0, 3) == 0:
         $ splash_message = renpy.random.choice(splash_messages)
-    show splash_warning "[splash_message]" with Dissolve(0.5, alpha=True)
-    pause 2.0
-    hide splash_warning with Dissolve(0.5, alpha=True)
+    show splash_warning "[splash_message]" with Dissolve(max(0, 4.0 - (datetime.datetime.now() - starttime).total_seconds()), alpha=True)
+    $ pause(6.0 - (datetime.datetime.now() - starttime).total_seconds())
+    hide splash_warning with Dissolve(max(0, 6.5 - (datetime.datetime.now() - starttime).total_seconds()), alpha=True)
+    $ pause(6.5 - (datetime.datetime.now() - starttime).total_seconds())
     $ config.allow_skipping = True
     return
-
-label warningscreen:
-    hide intro
-    show warning
-    pause 3.0
 
 label after_load:
     if persistent.playthrough == 0:
@@ -508,10 +509,10 @@ label quit:
         pause 0.01
     return
 
-label readonly:  # TO!DONE: find usages!
+label readonly:
     scene black
-    "Fuck, please contact saber-nyan!"
-    "https://github.com/saber-nyan"
+    "The game cannot be run because you are trying to run it from a read-only location."
+    "Please copy the DDLC application to your desktop or other accessible location and try again."
     $ renpy.quit()
     return
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc
