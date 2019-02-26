@@ -5,10 +5,8 @@ label ch0_main:
     play music t2
 
     python:
-        if persistent.monika is None or persistent.monika == "restored":
-            pass
-        else:
-            renpy.jump("ch0_kill")  # TO!DONE: character fix!
+        try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/monika.chr")
+        except: renpy.jump("ch0_kill")
 
     $ restore_all_characters()
     s "Heeeeeeeyyy!!"
