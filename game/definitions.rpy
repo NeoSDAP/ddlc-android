@@ -1,6 +1,6 @@
 define persistent.demo = False
-define persistent.steam = False
-define config.developer = True  # FIXME: set to False b4 release
+define persistent.steam = ("steamapps" in config.basedir.lower())
+define config.developer = False
 
 python early:
     import singleton
@@ -20,27 +20,41 @@ init python:
     def delete_all_saves():
         for savegame in renpy.list_saved_games(fast=True):
             renpy.unlink_save(savegame)
-    def delete_character(name):  # TO!DONE: character fix!
-        setattr(persistent, name, "deleted")
-        renpy.save_persistent()
-    def restore_character(name):  # TO!DONE: character fix!
-        setattr(persistent, name, "restored")
+    def delete_character(name):
+        import os
+        try: os.remove(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/" + name + ".chr")
+        except: pass
     def restore_all_characters():
-        for char in ("monika", "natsuki", "yuri", "sayori"):  # TO!DONE: character fix!
-            restore_character(char)
-        renpy.save_persistent()
-    def check_if_exist(name): #Changed
-        try:
-            return getattr(persistent, name) == "restored"
-        except:
-            return True
+        try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/monika.chr")
+        except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/monika.chr", "wb").write(renpy.file("monika.chr").read())
+        try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/natsuki.chr")
+        except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/natsuki.chr", "wb").write(renpy.file("natsuki.chr").read())
+        try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/yuri.chr")
+        except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/yuri.chr", "wb").write(renpy.file("yuri.chr").read())
+        try: renpy.file(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/sayori.chr")
+        except: open(os.path.realpath("/sdcard/Android/data/com.neosdap.DDLC/files") + "/sayori.chr", "wb").write(renpy.file("sayori.chr").read())
+    def restore_relevant_characters():
+        restore_all_characters()
+        if persistent.playthrough == 1 or persistent.playthrough == 2:
+            delete_character("sayori")
+        elif persistent.playthrough == 3:
+            delete_character("sayori")
+            delete_character("natsuki")
+            delete_character("yuri")
+        elif persistent.playthrough == 4:
+            delete_character("monika")
     def pause(time=None):
+        global _windows_hidden
         if not time:
+            _windows_hidden = True
             renpy.ui.saybehavior(afm=" ")
             renpy.ui.interact(mouse='pause', type='pause', roll_forward=None)
+            _windows_hidden = False
             return
         if time <= 0: return
+        _windows_hidden = True
         renpy.pause(time)
+        _windows_hidden = False
 
 
 
@@ -1336,6 +1350,13 @@ default s_readpoem = False
 default n_readpoem = False
 default y_readpoem = False
 default m_readpoem = False
+
+
+default n_read3 = False
+default y_read3 = False
+
+
+default n_poemearly = False
 
 
 default poemsread = 0
